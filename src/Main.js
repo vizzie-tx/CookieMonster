@@ -207,8 +207,8 @@ CM.Init = function() {
 
 		var delay = setInterval(function() {
 			if (typeof Queue !== 'undefined' && typeof jscolor !== 'undefined') {
-				CM.DelayInit();
 				clearInterval(delay);
+				CM.DelayInit();
 			}
 		}, 500);
 	}
@@ -292,6 +292,6 @@ CM.ConfigDefault = {
 };
 CM.ConfigPrefix = 'CMConfig';
 
-CM.VersionMajor = '2.019';
-CM.VersionMinor = '1';
+CM.VersionMajor = '2.021';
+CM.VersionMinor = '0.1';
 
