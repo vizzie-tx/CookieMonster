@@ -86,7 +86,7 @@ CM.Sim.hasAura = function(what) {
 }
 
 CM.Sim.auraMult = function(what) {
-	var n=1;
+	var n=0;
 	if (CM.Sim.hasAura(what)) n=1;
 	if (CM.Sim.hasAura('Reality Bending')) n += 0.1;
 	return n;
@@ -235,7 +235,6 @@ CM.Sim.CalculateGains = function() {
 	}
 
 	if (CM.Sim.Has('Santa\'s legacy')) mult *= 1 + (Game.santaLevel + 1) * 0.03;
-
 	for (var i in CM.Sim.Objects) {
 		var me = CM.Sim.Objects[i];
 		var storedCps = (typeof(me.cps) == 'function' ? me.cps(me) : me.cps);
@@ -247,7 +246,7 @@ CM.Sim.CalculateGains = function() {
 
 	var milkMult=1;
 	if (CM.Sim.Has('Santa\'s milk and cookies')) milkMult *= 1.05;
-	milkMult *=1+Game.auraMult('Breath of Milk')*0.05;
+	milkMult *=1+CM.Sim.auraMult('Breath of Milk')*0.05;
 	if (Game.hasGod) {
 		var godLvl = Game.hasGod('mother');
 		if (godLvl == 1) milkMult *= 1.1;
@@ -305,10 +304,9 @@ CM.Sim.CalculateGains = function() {
 	mult *= 1+CM.Sim.auraMult('Radiant Appetite');
 	
 	var n = Game.shimmerTypes['golden'].n;
-	var auraMult = CM.Sim.auraMult('Draogn\'s Fortune');
 
 	for (var i = 0; i < n; i++) {
-		mult *= 1+auraMult('Dragon\'s Fortune')*1.23;
+		mult *= 1+CM.Sim.auraMult('Dragon\'s Fortune')*1.23;
 	}
 	
 	var rawCookiesPs = CM.Sim.cookiesPs * mult;
@@ -345,7 +343,6 @@ CM.Sim.CalculateGains = function() {
 	
 	// Removed buffs
 
-	console.log("OUr mult: " + mult + "; Game mult: " + Game.globalCpsMult);
 	CM.Sim.cookiesPs *= mult;
 };
 
