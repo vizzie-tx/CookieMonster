@@ -1242,6 +1242,15 @@ CM.Disp.AddMenuStats = function(title) {
 			luckyRewardFrenzyMaxWrath *= 1.1;
 			luckyCurWrath *= 1.1;
 		}
+		if (Game.hasAura('Reality Bending')) {
+			luckyRewardMax *= 1.01;
+			luckyRewardFrenzyMax *= 1.01;
+			luckyCur *= 1.01;
+			luckyRewardMaxWrath *= 1.01;
+			luckyRewardFrenzyMaxWrath *= 1.01;
+			luckyCurWrath *= 1.01;
+		}
+		
 		var luckySplit = luckyRewardMax != luckyRewardMaxWrath;
 
 		var luckyReqFrag = document.createDocumentFragment();
@@ -1300,6 +1309,14 @@ CM.Disp.AddMenuStats = function(title) {
 			chainWrathRewardMax *= 1.1;
 			chainFrenzyWrathRewardMax *= 1.1;
 			chainCurWrath *= 1.1;
+		}
+		if (Game.hasAura('Reality Bending')) {
+			chainRewardMax *= 1.01;
+			chainFrenzyRewardMax *= 1.01;
+			chainCur *= 1.01;
+			chainWrathRewardMax *= 1.01;
+			chainFrenzyWrathRewardMax *= 1.01;
+			chainCurWrath *= 1.01;
 		}
 
 		var chainReqFrag = document.createDocumentFragment();

@@ -1822,6 +1822,15 @@ CM.Disp.AddMenuStats = function(title) {
 			luckyRewardFrenzyMaxWrath *= 1.1;
 			luckyCurWrath *= 1.1;
 		}
+		if (Game.hasAura('Reality Bending')) {
+			luckyRewardMax *= 1.01;
+			luckyRewardFrenzyMax *= 1.01;
+			luckyCur *= 1.01;
+			luckyRewardMaxWrath *= 1.01;
+			luckyRewardFrenzyMaxWrath *= 1.01;
+			luckyCurWrath *= 1.01;
+		}
+		
 		var luckySplit = luckyRewardMax != luckyRewardMaxWrath;
 
 		var luckyReqFrag = document.createDocumentFragment();
@@ -1880,6 +1889,14 @@ CM.Disp.AddMenuStats = function(title) {
 			chainWrathRewardMax *= 1.1;
 			chainFrenzyWrathRewardMax *= 1.1;
 			chainCurWrath *= 1.1;
+		}
+		if (Game.hasAura('Reality Bending')) {
+			chainRewardMax *= 1.01;
+			chainFrenzyRewardMax *= 1.01;
+			chainCur *= 1.01;
+			chainWrathRewardMax *= 1.01;
+			chainFrenzyWrathRewardMax *= 1.01;
+			chainCurWrath *= 1.01;
 		}
 
 		var chainReqFrag = document.createDocumentFragment();
@@ -2983,6 +3000,7 @@ CM.Sim.BuildingSell = function(basePrice, start, free, amount, emuAura) {
 		price = Math.ceil(price);
 		var giveBack = 0.25;
 		if (Game.hasAura('Earth Shatterer') || emuAura) giveBack = 0.5;
+		if (Game.hasAura('Reality Bending') || emuAura) giveBack += 0.025
 		price = Math.floor(price * giveBack);
 		if (start > 0) {
 			moni += price;
@@ -3171,6 +3189,7 @@ CM.Sim.CalculateGains = function() {
 	var milkMult=1;
 	if (CM.Sim.Has('Santa\'s milk and cookies')) milkMult *= 1.05;
 	if (CM.Sim.hasAura('Breath of Milk')) milkMult *= 1.05;
+	if (CM.Sim.hasAura('Reality Bending')) milkMult *= 1.005;
 	if (Game.hasGod) {
 		var godLvl = Game.hasGod('mother');
 		if (godLvl == 1) milkMult *= 1.1;
@@ -3194,7 +3213,9 @@ CM.Sim.CalculateGains = function() {
 	if (CM.Sim.Has('Kitten assistants to the regional manager')) catMult *= (1 + (CM.Sim.AchievementsOwned / 25) * 0.175 * milkMult);
 	if (CM.Sim.Has('Kitten marketeers')) catMult *= (1 + (CM.Sim.AchievementsOwned / 25) * 0.15 * milkMult);
 	if (CM.Sim.Has('Kitten analysts')) catMult *= (1 + (CM.Sim.AchievementsOwned / 25) * 0.125 * milkMult);
+	if (CM.Sim.Has('Kitten executives')) catMult *= (1 + (CM.Sim.AchievementsOwned / 25) * 0.115 * milkMult);
 	if (CM.Sim.Has('Kitten angels')) catMult *= (1 + (CM.Sim.AchievementsOwned / 25) * 0.1 * milkMult);
+	if (CM.Sim.Has('Fortune #103')) catMult *= (1 + (CM.Sim.AchievementsOwned / 25) * 0.05 * milkMult);
 
 	mult *= catMult;
 
@@ -3224,14 +3245,21 @@ CM.Sim.CalculateGains = function() {
 	if (CM.Sim.Has('Sugar baking')) mult *= (1 + Math.min(100, Game.lumps) * 0.01);
 
 	if (CM.Sim.hasAura('Radiant Appetite')) mult *= 2;
-
+	
 	if (Game.hasAura('Dragon\'s Fortune')) {
 		var n = Game.shimmerTypes['golden'].n;
 		for (var i = 0; i < n; i++) {
 			mult *= 2.23;
 		}
 	}
-
+	if (CM.Sim.hasAura('Reality Bending')) {
+		mult *= 1.1;
+		var n = Game.shimmerTypes['golden'].n;
+		for (var i = 0; i < n; i++) {
+			mult *= 1.123;
+		}
+	}
+	
 	var rawCookiesPs = CM.Sim.cookiesPs * mult;
 
 	for (var i in Game.CpsAchievements) {
