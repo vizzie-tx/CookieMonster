@@ -49,8 +49,7 @@ CM.Sim.BuildingSell = function(basePrice, start, free, amount, emuAura) {
 		price = Game.modifyBuildingPrice({}, price);
 		price = Math.ceil(price);
 		var giveBack = 0.25;
-		if (Game.hasAura('Earth Shatterer') || emuAura) giveBack = 0.5;
-		if (Game.hasAura('Reality Bending') || emuAura) giveBack += 0.025
+		giveBack += (emuAura ? 1.1 : CM.Sim.auraMult('Earth Shatterer')) * 0.25;
 		price = Math.floor(price * giveBack);
 		if (start > 0) {
 			moni += price;
@@ -86,6 +85,13 @@ CM.Sim.hasAura = function(what) {
 		return false;
 }
 
+CM.Sim.auraMult = function(what) {
+	var n=1;
+	if (CM.Sim.hasAura(what)) n=1;
+	if (CM.Sim.hasAura('Reality Bending')) n += 0.1;
+	return n;
+}
+
 eval('CM.Sim.GetTieredCpsMult = ' + Game.GetTieredCpsMult.toString()
 	.split('Game.Has').join('CM.Sim.Has')
 	.split('me.tieredUpgrades').join('Game.Objects[me.name].tieredUpgrades')
@@ -96,6 +102,7 @@ eval('CM.Sim.GetTieredCpsMult = ' + Game.GetTieredCpsMult.toString()
 	.split('me.id').join('Game.Objects[me.name].id')
 	.split('Game.Objects[\'Grandma\']').join('CM.Sim.Objects[\'Grandma\']')
 );
+
 
 CM.Sim.getCPSBuffMult = function() {
 	var mult = 1;
@@ -240,8 +247,7 @@ CM.Sim.CalculateGains = function() {
 
 	var milkMult=1;
 	if (CM.Sim.Has('Santa\'s milk and cookies')) milkMult *= 1.05;
-	if (CM.Sim.hasAura('Breath of Milk')) milkMult *= 1.05;
-	if (CM.Sim.hasAura('Reality Bending')) milkMult *= 1.005;
+	milkMult *=1+Game.auraMult('Breath of Milk')*0.05;
 	if (Game.hasGod) {
 		var godLvl = Game.hasGod('mother');
 		if (godLvl == 1) milkMult *= 1.1;
@@ -296,20 +302,13 @@ CM.Sim.CalculateGains = function() {
 	// TODO Store lumps?
 	if (CM.Sim.Has('Sugar baking')) mult *= (1 + Math.min(100, Game.lumps) * 0.01);
 
-	if (CM.Sim.hasAura('Radiant Appetite')) mult *= 2;
+	mult += CM.Sim.auraMult('Radiant Appetite');
 	
-	if (Game.hasAura('Dragon\'s Fortune')) {
-		var n = Game.shimmerTypes['golden'].n;
-		for (var i = 0; i < n; i++) {
-			mult *= 2.23;
-		}
-	}
-	if (CM.Sim.hasAura('Reality Bending')) {
-		mult *= 1.1;
-		var n = Game.shimmerTypes['golden'].n;
-		for (var i = 0; i < n; i++) {
-			mult *= 1.123;
-		}
+	var n = Game.shimmerTypes['golden'].n;
+	var auraMult = CM.Sim.auraMult('Draogn\'s Fortune');
+
+	for (var i = 0; i < n; i++) {
+		mult *= 1+auraMult('Dragon\'s Fortune')*1.23;
 	}
 	
 	var rawCookiesPs = CM.Sim.cookiesPs * mult;
@@ -346,10 +345,8 @@ CM.Sim.CalculateGains = function() {
 	
 	// Removed buffs
 
+	console.log("OUr mult: " + mult + "; Game mult: " + Game.globalCpsMult);
 	CM.Sim.cookiesPs *= mult;
-
-	// TODO remove?
-	// if (Game.hasBuff('Cursed finger')) Game.cookiesPs = 0;
 };
 
 CM.Sim.CheckOtherAchiev = function() {
