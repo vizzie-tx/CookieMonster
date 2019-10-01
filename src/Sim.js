@@ -302,7 +302,7 @@ CM.Sim.CalculateGains = function() {
 	// TODO Store lumps?
 	if (CM.Sim.Has('Sugar baking')) mult *= (1 + Math.min(100, Game.lumps) * 0.01);
 
-	mult += CM.Sim.auraMult('Radiant Appetite');
+	mult *= 1+CM.Sim.auraMult('Radiant Appetite');
 	
 	var n = Game.shimmerTypes['golden'].n;
 	var auraMult = CM.Sim.auraMult('Draogn\'s Fortune');
