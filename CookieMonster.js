@@ -39,8 +39,8 @@ CM.Cache.NextNumber = function(base) {
 
 CM.Cache.RemakeBuildingsPrices = function() {
 	for (var i in Game.Objects) {
-		CM.Cache.Objects10[i].price = CM.Sim.BuildingGetPrice(Game.Objects[i].basePrice, Game.Objects[i].amount, Game.Objects[i].free, 10);
-		CM.Cache.Objects100[i].price = CM.Sim.BuildingGetPrice(Game.Objects[i].basePrice, Game.Objects[i].amount, Game.Objects[i].free, 100);
+		CM.Cache.Objects10[i].price = CM.Sim.BuildingGetPrice(Game.Objects[i].basePrice, Game.Objects[i].amount, Game.Objects[i].free, 10, Game.Objects[i].fortune);
+		CM.Cache.Objects100[i].price = CM.Sim.BuildingGetPrice(Game.Objects[i].basePrice, Game.Objects[i].amount, Game.Objects[i].free, 100, Game.Objects[i].fortune);
 	}
 }
 
@@ -2259,7 +2259,7 @@ CM.Disp.Tooltip = function(type, name) {
 	if (type == 'b') {
 		l('tooltip').innerHTML = Game.Objects[name].tooltip();
 		if (CM.Config.TooltipAmor == 1) {
-			var buildPrice = CM.Sim.BuildingGetPrice(Game.Objects[name].basePrice, 0, Game.Objects[name].free, Game.Objects[name].amount);
+			var buildPrice = CM.Sim.BuildingGetPrice(Game.Objects[name].basePrice, 0, Game.Objects[name].free, Game.Objects[name].amount, Game.Objects[name].fortune);
 			var amortizeAmount = buildPrice - Game.Objects[name].totalCookies;
 			if (amortizeAmount > 0) {
 				l('tooltip').innerHTML = l('tooltip').innerHTML
@@ -2952,22 +2952,11 @@ CM.VersionMinor = '0.1';
  * Sim *
  *******/
 
-CM.Sim.BuildingGetPrice = function(basePrice, start, free, increase) {
-	/*var price=0;
-	for (var i = Math.max(0 , start); i < Math.max(0, start + increase); i++) {
-		price += basePrice * Math.pow(Game.priceIncrease, Math.max(0, i - free));
-	}
-	if (Game.Has('Season savings')) price *= 0.99;
-	if (Game.Has('Santa\'s dominion')) price *= 0.99;
-	if (Game.Has('Faberge egg')) price *= 0.99;
-	if (Game.Has('Divine discount')) price *= 0.99;
-	if (Game.hasAura('Fierce Hoarder')) price *= 0.98;
-	return Math.ceil(price);*/
-
+CM.Sim.BuildingGetPrice = function(basePrice, start, free, increase, fortune) {
 	var moni = 0;
 	for (var i = 0; i < increase; i++) {
 		var price = basePrice * Math.pow(Game.priceIncrease, Math.max(0, start - free));
-		price = Game.modifyBuildingPrice({}, price);
+		price = Game.modifyBuildingPrice({"fortune": fortune}, price);
 		price = Math.ceil(price);
 		moni += price;
 		start++;
@@ -3073,6 +3062,7 @@ CM.Sim.InitData = function() {
 		// Below is needed for above eval!
 		you.baseCps = me.baseCps;
 		you.name = me.name;
+		you.fortune = me.fortune;
 	}
 
 	// Upgrades
@@ -3104,6 +3094,7 @@ CM.Sim.CopyData = function() {
 		var you = CM.Sim.Objects[i];
 		you.amount = me.amount;
 		you.level = me.level;
+		you.fortune = me.fortune;
 	}
 
 	// Upgrades
@@ -3292,7 +3283,6 @@ CM.Sim.CalculateGains = function() {
 	// Removed debug upgrades
 	
 	// Removed buffs
-
 	CM.Sim.cookiesPs *= mult;
 };
 
@@ -3366,22 +3356,9 @@ CM.Sim.BuyBuildings = function(amount, target) {
 		var me = CM.Sim.Objects[i];
 		me.amount += amount;
 
-		if (i == 'Cursor') {
-			if (me.amount >= 1) CM.Sim.Win('Click');
-			if (me.amount >= 2) CM.Sim.Win('Double-click');
-			if (me.amount >= 50) CM.Sim.Win('Mouse wheel');
-			if (me.amount >= 100) CM.Sim.Win('Of Mice and Men');
-			if (me.amount >= 200) CM.Sim.Win('The Digital');
-			if (me.amount >= 300) CM.Sim.Win('Extreme polydactyly');
-			if (me.amount >= 400) CM.Sim.Win('Dr. T');
-			if (me.amount >= 500) CM.Sim.Win('Thumbs, phalanges, metacarpals');
-			if (me.amount >= 600) CM.Sim.Win('With her finger and her thumb');
-		}
-		else {
-			for (var j in Game.Objects[me.name].tieredAchievs) {
-				if (me.amount >= Game.Tiers[Game.Objects[me.name].tieredAchievs[j].tier].achievUnlock)
-					CM.Sim.Win(Game.Objects[me.name].tieredAchievs[j].name);
-			}
+		for (var j in Game.Objects[me.name].tieredAchievs) {
+			if (me.amount >= Game.Tiers[Game.Objects[me.name].tieredAchievs[j].tier].achievUnlock)
+				CM.Sim.Win(Game.Objects[me.name].tieredAchievs[j].name);
 		}
 
 		var lastAchievementsOwned = CM.Sim.AchievementsOwned;
